@@ -79,6 +79,40 @@ server.get('/accounts/:id', async (req, res) => {
 @ROUTE: "/accounts"
 */
 
+server.post('/accounts', async (req, res) => {
+  const newAccount = req.body;
+
+  try {
+
+    const accounts = await find();
+
+    const result = accounts.filter((account) => {
+      return newAccount.name === account.name;
+
+    }) // checking for duplicate account names
+    // to show custom error message.
+    // However, in the sqlite db schema,
+    // we already do check that, as name is required to be unique.
+
+    console.log("RESULT::", result);
+
+    if (result.length) {
+      return res.status(400)
+        .json({
+          message: `account ${newAccount.name} already exist`
+        });
+    } else {
+
+      add(newAccount);
+      return res.status(201).json(newAccount);
+    }
+  }
+  catch (err) {
+    return res.status(500)
+      .json({err: Error})
+  }
+})
+
 /*
 @PUT: Account
 @PARAMS: id[STRING]! name[STRING]!
