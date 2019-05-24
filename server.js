@@ -61,7 +61,7 @@ server.get('/accounts/:id', async (req, res) => {
       return res.status(200).json(account);
     }
 
-    res.status(400)
+    res.status(404)
       .json({message: `No account found with id ${id}`});
   }
   catch (err) {
@@ -109,7 +109,11 @@ server.post('/accounts', async (req, res) => {
   }
   catch (err) {
     return res.status(500)
-      .json({err: Error})
+      .json({
+        err: Error,
+        message: 'Server error'
+
+      })
   }
 })
 
@@ -124,6 +128,23 @@ server.post('/accounts', async (req, res) => {
 @PARAMS: id[STRING]!
 @ROUTE: "/accounts/:id"
 */
+
+server.delete('/accounts/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await remove(id)
+      ?   res.status(200)
+             .json({message: `account has been deleted`})
+      :   res.status(404)
+             .json({message: `account does not exist.`});
+  }
+  catch (err) {
+    res.status(500)
+       .json({error: `Server error`});
+  }
+
+});
 
 
 module.exports = server;
