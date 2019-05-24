@@ -110,7 +110,7 @@ server.post('/accounts', async (req, res) => {
   catch (err) {
     return res.status(500)
       .json({
-        err: Error,
+        err,
         message: 'Server error'
 
       })
@@ -122,6 +122,25 @@ server.post('/accounts', async (req, res) => {
 @PARAMS: id[STRING]! name[STRING]!
 @ROUTE: "/accounts/:id"
 */
+
+server.put('/accounts/:id', async (req, res) => {
+  const { id } = req.params;
+  const accountChanges = req.body;
+
+  try {
+    await update(id, accountChanges)
+      ?   res.status(200).json(accountChanges)
+      :   res.status(404)
+             .json({message: `account does not exist`})
+  }
+  catch (err) {
+    res.status(500)
+       .json({
+         error: `Unable to process the request`,
+         err
+       })
+  }
+});
 
 /*
 @DELETE: Account
